@@ -1,0 +1,22 @@
+<!-- index.wxml -->
+<view class="container">
+  <!-- 连接状态指示器 -->
+  <view class="connection-status" wx:if="{{!isWebSocketConnected}}">
+    <text class="iconfont icon-warning"></text>
+    <text>实时连接已断开，数据可能非最新</text>
+  </view>
+
+  <!-- 图书馆列表 -->
+  <view class="library-list">
+    <view class="library-item" wx:for="{{libraries}}" wx:key="id" bindtap="navigateToLibrary" data-library="{{item}}">
+      <view class="library-name">{{item.name}}</view>
+      <view class="seats-info">
+        <text>可用座位: {{item.availableSeats}}/{{item.totalSeats}}</text>
+        <view class="progress-bar">
+          <view class="progress" style="width: {{item.availabilityRate}}; background-color {{item.availabilityRate < 20 ? '#e64340' : (item.availabilityRate < 50 ? '#ffbe00' : '#1aad19')}}"></view>
+        </view>
+        <text class="update-time">更新于: {{lastUpdateTime}}</text>
+      </view>
+    </view>
+  </view>
+</view>
