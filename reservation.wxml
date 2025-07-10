@@ -1,0 +1,113 @@
+<!-- 连接状态指示器 -->
+<view class="connection-status" wx:if="{{!isWebSocketConnected}}">
+  <text class="iconfont icon-warning"></text>
+  <text>实时连接已断开，数据可能非最新</text>
+</view>
+
+<!-- 预约信息为空 -->
+<view class="empty-state" wx:if="{{!reservationInfo}}">
+  <image src="https://picsum.photos/200/200?random=1" mode="aspectFit" alt="暂无预约"></image>
+  <text>暂无预约信息</text>
+  <button class="reserve-btn" bindtap="navigateToLibrary">去预约</button>
+</view>
+
+<!-- 预约信息 -->
+<view class="reservation-info" wx:if="{{reservationInfo}}">
+  <!-- 预约状态 -->
+  <view class="status-bar {{reservationInfo.status === 'active' ? 'status-active' : (reservationInfo.status === 'checkedIn' ? 'status-checkedIn' : 'status-completed')}}">
+    <text>{{reservationInfo.status === 'active' ? '已预约' : (reservationInfo.status === 'checkedIn' ? '已签到' : '已完成')}}</text>
+  </view>
+  
+  <!-- 基本信息 -->
+  <view class="base-info">
+    <view class="reservation-id">预约单号: {{reservationInfo.id}}</view>
+    <view class="time-info">
+      <text>预约时间: {{formatDateTime(reservationInfo.startTime)}} - {{formatDateTime(reservationInfo.endTime)}}</text>
+      <text class="remaining-time" wx:if="{{reservationInfo.status === 'active' || reservationInfo.status === 'checkedIn'}}">剩余时间: {{calculateRemainingTime()}}</text>
+    </view>
+  </view>
+  
+  <!-- 座位信息 -->
+  <view class="seat-info">
+    <view class="library-info">
+      <text>{{reservationInfo.seat.libraryName}}</text>
+      <text>{{reservationInfo.seat.floorName}}</text>
+      <text>{{reservationInfo.seat.roomName}}</text>
+    </view>
+    <view class="seat-number">
+      <text class="title">座位号:</text>
+      <text class="number">{{reservationInfo.seat.name}}</text>
+    </view>
+  </view>
+  
+  <!-- 二维码 -->
+  <view class="qrcode-section" wx:if="{{reservationInfo.status === 'active' || reservationInfo.status === 'checkedIn'}}">
+    <button class="qrcode-btn" bindtap="showQRCodeModal">
+      <text class="iconfont icon-qrcode"></text>
+      <text>查看入场码</text>
+    </button>
+  </view>
+  
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <button class="cancel-btn" bindtap="showCancelModal" wx:if="{{reservationInfo.status === 'active'}}">
+      取消预约
+    </button>
+    <button class="checkin-btn" bindtap="checkIn" wx:if="{{reservationInfo.status === 'active'}}">
+      立即签到
+    </button>
+    <button class="checkout-btn" bindtap="checkOut" wx:if="{{reservationInfo.status === 'checkedIn'}}">
+      提前退座
+    </button>
+  </view>
+  
+  <!-- 刷新按钮 -->
+  <view class="refresh-section">
+    <button class="refresh-btn" bindtap="refreshReservation">
+      <text class="iconfont icon-refresh"></text>
+      <text>刷新信息</text>
+    </button>
+  </view>
+</view>
+
+<!-- 取消预约弹窗 -->
+<view class="cancel-modal" wx:if="{{showCancelModal}}">
+  <view class="modal-mask" bindtap="closeCancelModal"></view>
+  <view class="modal-content">
+    <view class="modal-title">取消预约</view>
+    <view class="modal-body">
+      <text class="tips">确定要取消此次预约吗？</text>
+      <view class="reasons">
+        <view class="reason-item {{cancelReason === item ? 'selected' : ''}}" 
+              wx:for="{{cancelReasons}}" 
+              wx:key="index" 
+              data-reason="{{item}}" 
+              bindtap="selectCancelReason">
+          <text>{{item}}</text>
+          <text class="iconfont icon-check" wx:if="{{cancelReason === item}}"></text>
+        </view>
+      </view>
+    </view>
+    <view class="modal-footer">
+      <button class="cancel-btn" bindtap="closeCancelModal">取消</button>
+      <button class="confirm-btn" bindtap="confirmCancel" loading="{{loading}}">确认取消</button>
+    </view>
+  </view>
+</view>
+
+<!-- 二维码弹窗 -->
+<view class="qrcode-modal" wx:if="{{showQRCode}}">
+  <view class="modal-mask" bindtap="closeQRCodeModal"></view>
+  <view class="modal-content">
+    <view class="modal-title">入场码</view>
+    <view class="qrcode-container">
+      <!-- 使用占位图代替实际二维码 -->
+      <image src="https://picsum.photos/300/300?random=2" mode="aspectFit" alt="入场二维码"></image>
+      <text class="tips">请在图书馆入口处出示此二维码</text>
+      <text class="valid-time">有效期至: {{formatDateTime(reservationInfo.endTime)}}</text>
+    </view>
+    <view class="close-btn" bindtap="closeQRCodeModal">
+      <text class="iconfont icon-close"></text>
+    </view>
+  </view>
+</view>

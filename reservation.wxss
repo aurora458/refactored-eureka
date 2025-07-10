@@ -1,0 +1,346 @@
+/* 连接状态指示器 */
+.connection-status {
+  padding: 10rpx 20rpx;
+  background-color: #fff6d9;
+  color: #ff9900;
+  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  padding: 0 40rpx;
+}
+
+.empty-state image {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 40rpx;
+}
+
+.empty-state text {
+  font-size: 30rpx;
+  color: #666;
+  margin-bottom: 60rpx;
+}
+
+.reserve-btn {
+  background-color: #1aad19;
+  color: white;
+  font-size: 32rpx;
+  padding: 20rpx 60rpx;
+  border-radius: 10rpx;
+}
+
+/* 预约信息 */
+.reservation-info {
+  padding: 30rpx;
+}
+
+/* 状态条 */
+.status-bar {
+  text-align: center;
+  padding: 15rpx 0;
+  border-radius: 10rpx;
+  color: white;
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 30rpx;
+}
+
+.status-active {
+  background-color: #1aad19;
+}
+
+.status-checkedIn {
+  background-color: #ff9900;
+}
+
+.status-completed {
+  background-color: #999;
+}
+
+/* 基本信息 */
+.base-info {
+  background-color: white;
+  border-radius: 15rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+}
+
+.reservation-id {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+}
+
+.time-info {
+  font-size: 28rpx;
+}
+
+.time-info text {
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.remaining-time {
+  color: #e64340;
+  font-weight: bold;
+}
+
+/* 座位信息 */
+.seat-info {
+  background-color: white;
+  border-radius: 15rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+}
+
+.library-info {
+  font-size: 28rpx;
+  margin-bottom: 20rpx;
+}
+
+.library-info text {
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.seat-number {
+  display: flex;
+  align-items: center;
+  font-size: 32rpx;
+}
+
+.seat-number .title {
+  color: #666;
+  margin-right: 20rpx;
+}
+
+.seat-number .number {
+  font-weight: bold;
+}
+
+/* 二维码区域 */
+.qrcode-section {
+  background-color: white;
+  border-radius: 15rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.qrcode-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 30rpx;
+  padding: 20rpx 0;
+  border-radius: 10rpx;
+}
+
+.qrcode-btn .iconfont {
+  margin-right: 15rpx;
+  font-size: 36rpx;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30rpx;
+}
+
+.action-buttons button {
+  flex: 1;
+  margin: 0 15rpx;
+  padding: 20rpx 0;
+  border-radius: 15rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.cancel-btn {
+  background-color: #f5f5f5;
+  color: #666;
+  border: 1rpx solid #eee;
+}
+
+.checkin-btn {
+  background-color: #1aad19;
+  color: white;
+}
+
+.checkout-btn {
+  background-color: #e64340;
+  color: white;
+}
+
+/* 刷新按钮 */
+.refresh-section {
+  text-align: center;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 28rpx;
+}
+
+.refresh-btn .iconfont {
+  margin-right: 10rpx;
+}
+
+/* 取消预约弹窗 */
+.cancel-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+}
+
+.modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border-radius: 20rpx 20rpx 0 0;
+  padding: 30rpx;
+  box-sizing: border-box;
+}
+
+.modal-title {
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.modal-body {
+  padding: 30rpx 0;
+}
+
+.tips {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 30rpx;
+}
+
+.reasons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+}
+
+.reason-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15rpx 20rpx;
+  border: 1rpx solid #eee;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+}
+
+.reason-item.selected {
+  border-color: #1aad19;
+  color: #1aad19;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 20rpx;
+}
+
+.modal-footer button {
+  flex: 1;
+  margin: 0 15rpx;
+  padding: 15rpx 0;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+/* 二维码弹窗 */
+.qrcode-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+}
+
+.qrcode-modal .modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50rpx 30rpx;
+}
+
+.qrcode-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 30rpx 0;
+}
+
+.qrcode-container image {
+  width: 300rpx;
+  height: 300rpx;
+  margin-bottom: 30rpx;
+}
+
+.qrcode-container .tips {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+}
+
+.qrcode-container .valid-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.close-btn {
+  position: absolute;
+  bottom: 50rpx;
+  width: 60rpx;
+  height: 60rpx;
+  background-color: rgba(0,0,0,0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 36rpx;
+}

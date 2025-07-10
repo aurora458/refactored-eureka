@@ -1,0 +1,145 @@
+<!-- 连接状态指示器 -->
+<view class="connection-status" wx:if="{{!isWebSocketConnected}}">
+  <text class="iconfont icon-warning"></text>
+  <text>实时连接已断开，数据可能非最新</text>
+</view>
+
+<!-- 头部信息 -->
+<view class="header">
+  <view class="title">{{libraryName}} - {{floorName}}</view>
+  <view class="refresh-btn" bindtap="refreshPage">
+    <text class="iconfont icon-refresh"></text>
+    <text>刷新</text>
+  </view>
+</view>
+
+<!-- 搜索框 -->
+<view class="search-box">
+  <input type="text" placeholder="搜索房间" bindinput="searchRooms" />
+  <text class="iconfont icon-search"></text>
+</view>
+
+<!-- 房间列表 -->
+<view class="room-list">
+  <view class="room-item" 
+        wx:for="{{rooms}}" 
+        wx:key="id"
+        data-room="{{item}}"
+        bindtap="viewRoomDetail">
+    <view class="room-header">
+      <view class="room-name">{{item.name}}</view>
+      <view class="room-status">
+        <text class="available-count">{{item.availableSeats}}</text>
+        <text>/{{item.totalSeats}}个座位可用</text>
+      </view>
+    </view>
+    
+    <view class="go-btn">
+      <text>查看座位</text>
+      <text class="iconfont icon-arrow-right"></text>
+    </view>
+  </view>
+</view>
+
+<!-- 房间详情弹窗 -->
+<view class="room-detail-modal" wx:if="{{showRoomDetail}}">
+  <view class="modal-mask" bindtap="closeRoomDetail"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <view class="modal-title">{{selectedRoom.name}}</view>
+      <view class="close-btn" bindtap="closeRoomDetail">
+        <text class="iconfont icon-close"></text>
+      </view>
+    </view>
+    
+    <view class="modal-body">
+      <!-- 房间概览 -->
+      <view class="room-overview">
+        <view class="room-info">
+          <view class="room-name">{{selectedRoom.name}}</view>
+          <view class="room-status">
+            <text class="available-count">{{selectedRoom.availableSeats}}</text>
+            <text>/{{selectedRoom.totalSeats}}个座位可用</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 座位网格 -->
+      <view class="seats-container">
+
+        
+        <!-- 座位区域 -->
+        <view class="seats-grid" style="grid-template-columns: repeat({{selectedRoom.cols}}, {{seatSize}}rpx); gap: {{seatMargin}}rpx;">
+          <view class="seat {{item.status === 'available' ? 'seat-available' : (item.status === 'occupied' ? 'seat-occupied' : 'seat-reserved')}} {{item === selectedSeat ? 'seat-selected' : ''}}"
+                wx:for="{{selectedRoom.seats}}" 
+                wx:key="seatId"
+                data-seat="{{item}}"
+                bindtap="selectSeat"
+                style="{{item.statusChanged ? 'animation: seatChange 1s ease-in-out;' : ''}}">
+            <text>{{item.name}}</text>
+          </view>
+        </view>
+        
+        <!-- 座位图例 -->
+        <view class="seat-legend">
+          <view class="legend-item">
+            <view class="legend-color seat-available"></view>
+            <text>可预约</text>
+          </view>
+          <view class="legend-item">
+            <view class="legend-color seat-occupied"></view>
+            <text>已占用</text>
+          </view>
+          <view class="legend-item">
+            <view class="legend-color seat-reserved"></view>
+            <text>已预约</text>
+          </view>
+          <view class="legend-item">
+            <view class="legend-color seat-selected"></view>
+            <text>已选中</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="close-btn" bindtap="closeRoomDetail">
+        返回
+      </button>
+    </view>
+  </view>
+</view>
+
+<!-- 座位详情弹窗 -->
+<view class="seat-detail-modal" wx:if="{{showSeatDetail}}">
+  <view class="modal-mask" bindtap="closeSeatDetail"></view>
+  <view class="modal-content">
+    <view class="modal-title">座位详情</view>
+    <view class="modal-body">
+      <!-- 使用表格布局 -->
+      <table class="seat-info-table">
+        <tbody>
+          <tr>
+            <th>座位号</th>
+            <td>{{selectedSeat.name}}</td>
+          </tr>
+          <tr>
+            <th>状态</th>
+            <td>可预约</td>
+          </tr>
+          <tr>
+            <th>预约时长</th>
+            <td class="reservation-time" bindtap="showTimeSelector">
+              {{selectedTime}}
+              <text class="iconfont icon-arrow-right"></text>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </view>
+    <view class="modal-footer">
+      <button class="cancel-btn" bindtap="closeSeatDetail">取消</button>
+      <button class="confirm-btn" bindtap="confirmReservation" loading="{{bookingLoading}}">确认预约</button>
+    </view>
+  </view>
+</view>

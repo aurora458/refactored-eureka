@@ -1,0 +1,153 @@
+<!-- 连接状态指示器 -->
+<view class="connection-status" wx:if="{{!isWebSocketConnected}}">
+  <text class="iconfont icon-warning"></text>
+  <text>实时连接已断开，数据可能非最新</text>
+</view>
+
+<!-- 头部 -->
+<view class="header">
+  <view class="title">预约历史</view>
+  <view class="refresh-btn" bindtap="refreshHistory">
+    <text class="iconfont icon-refresh"></text>
+    <text>刷新</text>
+  </view>
+</view>
+
+<!-- 筛选栏 -->
+<view class="filter-bar">
+  <!-- 状态筛选 -->
+  <view class="filter-group">
+    <text class="filter-label">状态:</text>
+    <view class="filter-options">
+      <view class="filter-option {{statusFilter === 'all' ? 'active' : ''}}" data-status="all" bindtap="changeStatusFilter">全部</view>
+      <view class="filter-option {{statusFilter === 'active' ? 'active' : ''}}" data-status="active" bindtap="changeStatusFilter">进行中</view>
+      <view class="filter-option {{statusFilter === 'completed' ? 'active' : ''}}" data-status="completed" bindtap="changeStatusFilter">已完成</view>
+      <view class="filter-option {{statusFilter === 'canceled' ? 'active' : ''}}" data-status="canceled" bindtap="changeStatusFilter">已取消</view>
+    </view>
+  </view>
+
+  <!-- 日期筛选 -->
+  <view class="filter-group">
+    <text class="filter-label">时间:</text>
+    <view class="filter-options">
+      <view class="filter-option {{dateFilter === 'all' ? 'active' : ''}}" data-date="all" bindtap="changeDateFilter">全部</view>
+      <view class="filter-option {{dateFilter === 'today' ? 'active' : ''}}" data-date="today" bindtap="changeDateFilter">今天</view>
+      <view class="filter-option {{dateFilter === 'week' ? 'active' : ''}}" data-date="week" bindtap="changeDateFilter">本周</view>
+      <view class="filter-option {{dateFilter === 'month' ? 'active' : ''}}" data-date="month" bindtap="changeDateFilter">本月</view>
+    </view>
+  </view>
+</view>
+
+<!-- 历史列表 -->
+<view class="history-list">
+  <!-- 加载中 -->
+  <view class="loading" wx:if="{{loading}}">
+    <text class="iconfont icon-loading"></text>
+    <text>加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && filteredList.length === 0}}">
+    <image src="/images/history-empty.png" mode="widthFix" alt="暂无历史"></image>
+    <text>暂无预约历史</text>
+  </view>
+
+  <!-- 历史记录列表 -->
+  <view class="history-item" 
+        wx:for="{{filteredList}}" 
+        wx:key="id"
+        data-record="{{item}}"
+        bindtap="viewDetail">
+    <view class="history-header">
+      <view class="library-name">{{item.libraryName}} {{item.floorName}} {{item.roomName}}</view>
+      <view class="status {{item.status === 'active' ? 'status-active' : (item.status === 'completed' ? 'status-completed' : (item.status === 'canceled' ? 'status-canceled' : 'status-expired'))}}">
+        {{item.status === 'active' ? '进行中' : (item.status === 'completed' ? '已完成' : (item.status === 'canceled' ? '已取消' : '已过期'))}}
+      </view>
+    </view>
+
+    <view class="history-body">
+      <view class="info-row">
+        <text class="label">座位号:</text>
+        <text class="value">{{item.seatName}}</text>
+      </view>
+      <view class="info-row">
+        <text class="label">时间:</text>
+        <text class="value">{{formatDateTime(item.startTime)}} - {{formatDateTime(item.endTime)}}</text>
+      </view>
+    </view>
+
+    <view class="history-footer">
+      <text class="id">订单号: {{item.id}}</text>
+      <text class="iconfont icon-arrow-right"></text>
+    </view>
+  </view>
+</view>
+
+<!-- 历史详情弹窗 -->
+<view class="detail-modal" wx:if="{{showDetail}}">
+  <view class="modal-mask" bindtap="closeDetail"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <view class="modal-title">预约详情</view>
+      <view class="close-btn" bindtap="closeDetail">
+        <text class="iconfont icon-close"></text>
+      </view>
+    </view>
+
+    <view class="modal-body">
+      <!-- 基本信息 -->
+      <view class="detail-section">
+        <view class="section-title">基本信息</view>
+        <view class="detail-table">
+          <view class="table-row">
+            <view class="table-label">订单号</view>
+            <view class="table-value">{{currentRecord.id}}</view>
+          </view>
+          <view class="table-row">
+            <view class="table-label">图书馆</view>
+            <view class="table-value">{{currentRecord.libraryName}}</view>
+          </view>
+          <view class="table-row">
+            <view class="table-label">楼层/房间</view>
+            <view class="table-value">{{currentRecord.floorName}} {{currentRecord.roomName}}</view>
+          </view>
+          <view class="table-row">
+            <view class="table-label">座位号</view>
+            <view class="table-value">{{currentRecord.seatName}}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 时间信息 -->
+      <view class="detail-section">
+        <view class="section-title">时间信息</view>
+        <view class="detail-table">
+          <view class="table-row">
+            <view class="table-label">预约时间</view>
+            <view class="table-value">{{formatDateTime(currentRecord.startTime)}} - {{formatDateTime(currentRecord.endTime)}}</view>
+          </view>
+          <view class="table-row" wx:if="{{currentRecord.checkInTime}}">
+            <view class="table-label">签到时间</view>
+            <view class="table-value">{{formatDateTime(currentRecord.checkInTime)}}</view>
+          </view>
+          <view class="table-row" wx:if="{{currentRecord.checkOutTime}}">
+            <view class="table-label">退座时间</view>
+            <view class="table-value">{{formatDateTime(currentRecord.checkOutTime)}}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 其他信息 -->
+      <view class="detail-section" wx:if="{{currentRecord.status === 'canceled' && currentRecord.cancelReason}}">
+        <view class="section-title">取消原因</view>
+        <view class="cancel-reason">
+          {{currentRecord.cancelReason}}
+        </view>
+      </view>
+    </view>
+
+    <view class="modal-footer">
+      <button class="close-btn" bindtap="closeDetail">关闭</button>
+    </view>
+  </view>
+</view>

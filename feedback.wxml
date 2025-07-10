@@ -1,0 +1,121 @@
+<!-- 反馈表单区域 -->
+<view class="feedback-form">
+  <view class="form-title">提交反馈</view>
+
+  <!-- 反馈类型 -->
+  <view class="form-section">
+    <view class="section-label">反馈类型 <text class="required">*</text></view>
+    <view class="type-options">
+      <view class="type-item {{feedbackType === item.id ? 'active' : ''}}" 
+            wx:for="{{typeOptions}}" 
+            wx:key="id"
+            data-type="{{item.id}}"
+            bindtap="selectType">
+        {{item.name}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 反馈内容 -->
+  <view class="form-section">
+    <view class="section-label">反馈内容 <text class="required">*</text></view>
+    <textarea 
+      class="content-input" 
+      placeholder="请详细描述您遇到的问题或建议..." 
+      bindinput="inputContent"
+      value="{{feedbackContent}}"
+      maxlength="500"
+    ></textarea>
+    <view class="word-count">{{feedbackContent.length}}/500</view>
+  </view>
+
+  <!-- 上传图片 -->
+  <view class="form-section">
+    <view class="section-label">上传图片（可选）</view>
+    <view class="image-uploader">
+      <!-- 已上传的图片 -->
+      <view class="image-item" wx:for="{{images}}" wx:key="index">
+        <image src="{{item}}" mode="aspectFill"></image>
+        <view class="delete-btn" data-index="{{index}}" bindtap="deleteImage">
+          <text class="iconfont icon-close"></text>
+        </view>
+      </view>
+
+      <!-- 上传按钮 -->
+      <view class="upload-btn" bindtap="chooseImage" wx:if="{{images.length < maxImages}}">
+        <text class="iconfont icon-add"></text>
+        <text>添加图片</text>
+      </view>
+    </view>
+    <view class="hint-text">最多上传3张图片，支持jpg、png格式</view>
+  </view>
+
+  <!-- 联系方式 -->
+  <view class="form-section">
+    <view class="section-label">联系方式（可选）</view>
+    <input 
+      class="contact-input" 
+      placeholder="请输入手机号或邮箱，方便我们联系您" 
+      bindinput="inputContact"
+      value="{{contactInfo}}"
+      maxlength="50"
+    ></input>
+  </view>
+
+  <!-- 提交按钮 -->
+  <button class="submit-btn" bindtap="submitFeedback" loading="{{submitting}}" disabled="{{submitting}}">
+    提交反馈
+  </button>
+</view>
+
+<!-- 历史反馈切换 -->
+<view class="history-toggle" bindtap="toggleHistory">
+  <text>{{showHistory ? '收起反馈历史' : '查看反馈历史'}}</text>
+  <text class="iconfont {{showHistory ? 'icon-arrow-up' : 'icon-arrow-down'}}"></text>
+</view>
+
+<!-- 反馈历史列表 -->
+<view class="history-list" wx:if="{{showHistory}}">
+  <!-- 加载中 -->
+  <view class="loading" wx:if="{{loading}}">
+    <text class="iconfont icon-loading"></text>
+    <text>加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && feedbackHistory.length === 0}}">
+    <image src="/images/feedback-empty.png" mode="widthFix"></image>
+    <text>暂无反馈历史</text>
+  </view>
+
+  <!-- 历史记录 -->
+  <view class="history-item" wx:for="{{feedbackHistory}}" wx:key="id">
+    <view class="history-header">
+      <view class="type-tag">{{item.typeName}}</view>
+      <view class="status {{item.status === 'pending' ? 'status-pending' : 'status-processed'}}">
+        {{item.status === 'pending' ? '处理中' : '已处理'}}
+      </view>
+    </view>
+
+    <view class="history-content">
+      <text>{{item.content}}</text>
+    </view>
+
+    <!-- 图片预览 -->
+    <view class="history-images" wx:if="{{item.images.length > 0}}">
+      <image src="{{img}}" mode="aspectFill" wx:for="{{item.images}}" wx:key="index"></image>
+    </view>
+
+    <view class="history-footer">
+      <text class="create-time">{{formatDateTime(item.createTime)}}</text>
+      <text class="contact">联系方式: {{item.contact}}</text>
+    </view>
+
+    <!-- 处理结果 -->
+    <view class="history-reply" wx:if="{{item.status === 'processed' && item.reply}}">
+      <view class="reply-label">处理回复:</view>
+      <view class="reply-content">{{item.reply}}</view>
+      <view class="reply-time">{{formatDateTime(item.processTime)}}</view>
+    </view>
+  </view>
+</view>

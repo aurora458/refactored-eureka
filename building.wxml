@@ -1,0 +1,115 @@
+<!-- 连接状态指示器 -->
+<view class="connection-status" wx:if="{{!isWebSocketConnected}}">
+  <text class="iconfont icon-warning"></text>
+  <text>实时连接已断开，数据可能非最新</text>
+</view>
+
+<!-- 头部信息 -->
+<view class="header">
+  <view class="title">{{libraryName}}</view>
+  <view class="refresh-btn" bindtap="refreshPage">
+    <text class="iconfont icon-refresh"></text>
+    <text>刷新</text>
+  </view>
+</view>
+
+<!-- 搜索框 -->
+<view class="search-box">
+  <input type="text" placeholder="搜索楼层" bindinput="searchFloors" />
+  <text class="iconfont icon-search"></text>
+</view>
+
+<!-- 楼层列表 -->
+<view class="floor-list">
+  <view class="floor-item" 
+        wx:for="{{floors}}" 
+        wx:key="id"
+        data-floor="{{item}}"
+        bindtap="viewFloorDetail">
+    <view class="floor-header">
+      <view class="floor-name">{{item.name}}</view>
+      <view class="floor-status">
+        <text class="available-count">{{item.availableCount}}</text>
+        <text>/{{item.totalCount}}个座位可用</text>
+      </view>
+    </view>
+    
+    <view class="floor-rooms">
+      <view class="room-item" wx:for="{{item.rooms}}" wx:key="id" wx:if="{{index < 2}}">
+        <view class="room-name">{{item.name}}</view>
+        <view class="room-status">
+          <text class="available-count">{{item.availableSeats}}</text>
+          <text>/{{item.totalSeats}}</text>
+        </view>
+      </view>
+      
+      <view class="more-rooms" wx:if="{{item.rooms.length > 2}}">
+        <text>+{{item.rooms.length - 2}}个房间</text>
+      </view>
+    </view>
+    
+    <view class="go-btn">
+      <text>查看详情</text>
+      <text class="iconfont icon-arrow-right"></text>
+    </view>
+  </view>
+</view>
+
+<!-- 楼层详情弹窗 -->
+<view class="floor-detail-modal" wx:if="{{showFloorDetail}}">
+  <view class="modal-mask" bindtap="closeFloorDetail"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <view class="modal-title">{{selectedFloor.name}}详情</view>
+      <view class="close-btn" bindtap="closeFloorDetail">
+        <text class="iconfont icon-close"></text>
+      </view>
+    </view>
+    
+    <view class="modal-body">
+      <!-- 楼层概览 -->
+      <view class="floor-overview">
+        <view class="floor-info">
+          <view class="floor-name">{{selectedFloor.name}}</view>
+          <view class="floor-status">
+            <text class="available-count">{{selectedFloor.availableCount}}</text>
+            <text>/{{selectedFloor.totalCount}}个座位可用</text>
+          </view>
+        </view>
+        
+        <!-- 楼层平面图（使用占位图） -->
+        <view class="floor-map">
+          <image src="{{selectedFloor.seatMapUrl}}" mode="aspectFit" alt="楼层座位图"></image>
+        </view>
+      </view>
+      
+      <!-- 房间列表 -->
+      <view class="rooms-list">
+        <view class="list-title">房间列表</view>
+        <view class="room-item" wx:for="{{selectedFloor.rooms}}" wx:key="id">
+          <view class="room-name">{{item.name}}</view>
+          <view class="room-status">
+            <view class="progress-bar">
+              <view class="progress" style="width: {{item.availableSeats/item.totalSeats*100}}"></view>
+            </view>
+            <text class="available-count">{{item.availableSeats}}/{{item.totalSeats}}</text>
+          </view>
+          <view class="go-btn" data-floor="{{selectedFloor}}" data-room="{{item}}" bindtap="goToFloor">
+            <text>查看座位</text>
+            <text class="iconfont icon-arrow-right"></text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="go-btn" data-floor="{{selectedFloor}}" bindtap="goToFloor">
+        <view class="modal-footer">
+          <button class="go-btn" data-floor="{{selectedFloor}}" bindtap="goToFloor">
+            <text>查看全部座位</text>
+             </button>
+        </view>
+      </button>
+    </view>
+  </view>
+</view>
